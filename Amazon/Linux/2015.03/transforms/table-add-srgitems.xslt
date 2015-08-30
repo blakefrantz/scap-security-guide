@@ -3,7 +3,7 @@
 <!-- this transform "fills out" a table of Rules with any SRG items (from an SRG mapping table)
      that are not already included -->
 
-<xsl:variable name="srgtable" select="document('../output/table-rhel7-srgmap-flat.xhtml')/html/body/table" />
+<xsl:variable name="srgtable" select="document('../output/table-alinux2015.03-srgmap-flat.xhtml')/html/body/table" />
 <xsl:variable name="cci_list" select="document('../../../shared/references/disa-cci-list.xml')/cci:cci_list" />
 
 

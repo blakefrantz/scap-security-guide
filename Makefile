@@ -36,8 +36,8 @@ DOCDIR=$(DATADIR)/doc
 
 # Define Makefile targets below
 
-all: fedora rhel5 rhel6 rhel7 openstack rhevm3 webmin firefox jre chromium rpm
-dist: chromium-dist firefox-dist fedora-dist jre-dist rhel6-dist rhel7-dist
+all: fedora rhel5 rhel6 rhel7 openstack rhevm3 webmin firefox jre chromium rpm alinux2015.03
+dist: chromium-dist firefox-dist fedora-dist jre-dist rhel6-dist rhel7-dist alinux2015.03-dist
 
 fedora:
 	cd Fedora/ && $(MAKE)
@@ -87,12 +87,19 @@ chromium:
 chromium-dist:
 	cd Chromium/ && $(MAKE) dist
 
-validate: fedora rhel6 rhel7 openstack rhevm3 chromium firefox jre
+alinux2015.03:
+	cd Amazon/Linux/2015.03/ && $(MAKE)
+
+alinux2015.03:
+	cd Amazon/Linux/2015.03/ && $(MAKE) dist
+
+validate: fedora rhel6 rhel7 openstack rhevm3 chromium firefox jre alinux2015.03
 	cd Fedora/ && $(MAKE) validate
 	cd RHEL/6/ && $(MAKE) validate
 	cd Chromium/ && $(MAKE) validate
 	cd Firefox/ && $(MAKE) validate
 	cd JRE/ && $(MAKE) validate
+	cd Amazon/Linux/2015.03/ && $(MAKE) validate
 	# Enable below when content validates correctly
 	#cd RHEL/7/ && $(MAKE) validate
 	#cd OpenStack && $(MAKE) validate
@@ -123,6 +130,7 @@ tarball: rpmroot
 	cp -r --preserve=links --parents Firefox/ $(RPMBUILD)/$(PKG)
 	cp -r --preserve=links --parents Webmin/ $(RPMBUILD)/$(PKG)
 	cp -r --preserve=links --parents Chromium $(RPMBUILD)/$(PKG)
+	cp -r --preserve=links --parents Amazon/Linux/2015.03/ $(RPMBUILD)/$(PKG)
 	cp -r JBossEAP5 $(RPMBUILD)/$(PKG)
 
 	# Don't trust the developers, clean out the build
@@ -135,6 +143,7 @@ tarball: rpmroot
 	(cd $(RPMBUILD)/$(PKG)/JRE/ && $(MAKE) clean)
 	(cd $(RPMBUILD)/$(PKG)/Firefox/ && $(MAKE) clean)
 	(cd $(RPMBUILD)/$(PKG)/Webmin/ && $(MAKE) clean)
+	(cd $(RPMBUILD)/$(PKG)/Amazon/Linux/2015.03/ && $(MAKE) clean)
 
 	# Create the source tar, copy it to TARBALL
 	# (e.g. somewhere in the SOURCES directory)
@@ -211,6 +220,7 @@ clean:
 	cd Firefox && $(MAKE) clean
 	cd Webmin && $(MAKE) clean
 	cd Chromium && $(MAKE) clean
+	cd Amazon/Linux/2015.03 && $(MAKE) clean
 	rm -f scap-security-guide.spec
 
 install: dist
@@ -228,9 +238,11 @@ install: dist
 	install -m 0644 RHEL/6/dist/guide/* $(PREFIX)/$(DOCDIR)/scap-security-guide/guides
 	install -m 0644 RHEL/7/dist/content/* $(PREFIX)/$(DATADIR)/xml/scap/ssg/content/
 	install -m 0644 RHEL/7/dist/guide/* $(PREFIX)/$(DOCDIR)/scap-security-guide/guides
+	install -m 0644 Amazon/Linux/2015.03/dist/content/* $(PREFIX)/$(DATADIR)/xml/scap/ssg/content/
+	install -m 0644 Amazon/Linux/2015.03/dist/guide/* $(PREFIX)/$(DOCDIR)/scap-securiy-guide/guides
 	install -m 0644 docs/scap-security-guide.8 $(PREFIX)/$(MANDIR)/en/man8/
 	install -m 0644 LICENSE $(PREFIX)/$(DOCDIR)/scap-security-guide
 	install -m 0644 README.md $(PREFIX)/$(DOCDIR)/scap-security-guide
 
-.PHONY: rhel5 rhel6 rhel7 jre firefox webmin tarball srpm rpm clean all
+.PHONY: rhel5 rhel6 rhel7 jre firefox webmin tarball srpm rpm alinux2015.03 clean all
 	rm -f scap-security-guide.spec

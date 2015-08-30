@@ -14,7 +14,7 @@
 
 <xsl:include href="constants.xslt"/>
 
-<xsl:variable name="ovalfile">unlinked-rhel7-oval.xml</xsl:variable>
+<xsl:variable name="ovalfile">unlinked-alinux2015.03-oval.xml</xsl:variable>
 <xsl:variable name="defaultseverity" select="'low'" />
 
 <!-- put elements created in this stylesheet into the xccdf namespace,

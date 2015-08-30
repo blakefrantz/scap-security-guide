@@ -19,7 +19,7 @@ FIREFOX = 'Mozilla Firefox'
 JRE = 'Java Runtime Environment'
 RHEL = 'Red Hat Enterprise Linux'
 WEBMIN = 'Webmin'
-
+ALINUX = 'Amazon Linux'
 
 def _header(schema_version):
     header = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -85,7 +85,8 @@ def map_product(version):
         product_name = RHEL
     if re.findall('webmin', version):
         product_name = WEBMIN
-
+    if re.findall('alinux', version):
+        product_name = ALINUX
     return product_name
 
 def check_is_applicable_for_product(oval_check_def, product):
