@@ -2,16 +2,16 @@ IN = input
 OUT = output
 BUILD = build
 TRANS = transforms
-SHARED = ../../../../shared
+SHARED = ../../../shared
 SHARED_CHECKS = $(SHARED)/oval
 REFS = $(SHARED)/references
-CONF = ../../config
+CONF = ../../../config
 UTILS = utils
 DIST = dist
 OSCAP_SHARE := $(shell which oscap | sed 's/bin\/oscap//')share/openscap)
 
 ID = ssg
-PROD = amazon_linux_2015.03.01
+PROD = alinux2015.03
 PROD_CHECKS = $(BUILD)/$(PROD)_checks
 
 OPENSCAP_SVG := $(shell $(SHARED)/$(TRANS)/oscapsupportssvg.py; echo $$?)
@@ -59,8 +59,8 @@ checks:
 	# into final list of OVAL checks
 ifeq ($(OVAL_5_11), 0)
 	find $(IN)/checks/oval_5.11 -maxdepth 1 -type f -name *.xml -exec cp {} $(PROD_CHECKS) ';'
-	# Update requested Amazon Linux 2015.03.01 OVAL version in $(CONF)/oval.config to be the 5.11 OVAL language version
-	sed -i "s/^\(amazon_linux_2015.03.01_oval_version = \).*/\15.11/" $(CONF)/oval\.config
+	# Update requested Amazon Linux 2015.03 OVAL version in $(CONF)/oval.config to be the 5.11 OVAL language version
+	sed -i "s/^\(alinux2015.03_oval_version = \).*/\15.11/" $(CONF)/oval\.config
 endif
 	xmlwf $(PROD_CHECKS)/*.xml
 	$(SHARED)/$(TRANS)/combinechecks.py $(CONF) $(PROD) $(PROD_CHECKS) > $(OUT)/unlinked-$(PROD)-oval.xml
@@ -68,8 +68,8 @@ endif
 
 # example, if needed: for converting XCCDF into shorthand
 #xccdf2shorthand:
-#	xsltproc -o $(XCCDF_OUTPUT_DIR)/amazon-linux-2015.03.01-shorthand.xml $(TRANS)/xccdf2shorthand.xslt $(REFS)/usgcb-amazon-linux-2015.03.01desktop-xccdf.xml
-#	tidy -m -xml -utf8 --indent-spaces=0 $(XCCDF_OUTPUT_DIR)/amazon-linux-2015.03.01-shorthand.xml
+#	xsltproc -o $(XCCDF_OUTPUT_DIR)/alinux2015.03-shorthand.xml $(TRANS)/xccdf2shorthand.xslt $(REFS)/usgcb-alinux2015.03desktop-xccdf.xml
+#	tidy -m -xml -utf8 --indent-spaces=0 $(XCCDF_OUTPUT_DIR)/alinux2015.03-shorthand.xml
 
 table-refs: shorthand2xccdf
 	xsltproc -stringparam ref "nist" -o $(OUT)/table-$(PROD)-nistrefs.html $(TRANS)/xccdf2table-byref.xslt $(OUT)/unlinked-$(PROD)-empty-groups-xccdf.xml
@@ -88,19 +88,19 @@ table-srgmap: shorthand2xccdf
 	xmllint --xmlout --html --output $(OUT)/table-$(PROD)-srgmap-flat.xhtml $(OUT)/table-$(PROD)-srgmap-flat.html
 
 table-stigs: shorthand2xccdf table-srgmap checks
-	xsltproc -o $(OUT)/table-amazon-linux-2015.03.01-stig.html $(TRANS)/xccdf2table-stig.xslt $(REFS)/disa-stig-amazon-linux-2015.03.01-v1r0.6-xccdf.xml  
-	xsltproc -o $(OUT)/table-amazon-linux-2015.03.01-stig-manual.html $(TRANS)/xccdf2table-stig.xslt $(REFS)/disa-stig-amazon-linux-2015.03.01-v1r0.6-xccdf-manual.xml  
-#	xsltproc -stringparam notes "../$(IN)/auxiliary/transition_notes.xml" -o $(OUT)/table-amazon-linux-2015.03.01-stig-manual-withnotes.html \
-#		$(TRANS)/xccdf2table-stig.xslt \
-#		$(REFS)/disa-stig-amazon-linux-2015.03.01-v1r0.6-xccdf-manual.xml
-#	temporarily retain an output file showing the short titles as well
-	xsltproc -stringparam profile "stig-$(PROD)-server" -stringparam testinfo "y" -o $(OUT)/table-stig-$(PROD)-testinfo.html \
-		$(TRANS)/xccdf2table-profileccirefs.xslt \
-		$(OUT)/unlinked-$(PROD)-xccdf.xml
-	xsltproc -stringparam overlay "../$(IN)/auxiliary/stig_overlay.xml" -o $(OUT)/unlinked-stig-$(PROD)-xccdf.xml \
-		$(TRANS)/xccdf-apply-overlay-stig.xslt \
-		$(OUT)/unlinked-$(PROD)-xccdf.xml
-	xsltproc -o $(OUT)/table-$(PROD)-stig.html $(TRANS)/xccdf2table-stig.xslt $(OUT)/unlinked-stig-$(PROD)-xccdf.xml  
+#	xsltproc -o $(OUT)/table-alinux2015.03-stig.html $(TRANS)/xccdf2table-stig.xslt $(REFS)/disa-stig-alinux2015.03-v1r0.6-xccdf.xml  
+#	xsltproc -o $(OUT)/table-alinux2015.03-stig-manual.html $(TRANS)/xccdf2table-stig.xslt $(REFS)/disa-stig-alinux2015.03-v1r0.6-xccdf-manual.xml  
+##	xsltproc -stringparam notes "../$(IN)/auxiliary/transition_notes.xml" -o $(OUT)/table-alinux2015.03-stig-manual-withnotes.html \
+##		$(TRANS)/xccdf2table-stig.xslt \
+##		$(REFS)/disa-stig-alinux2015.03-v1r0.6-xccdf-manual.xml
+##	temporarily retain an output file showing the short titles as well
+#	xsltproc -stringparam profile "stig-$(PROD)-server" -stringparam testinfo "y" -o $(OUT)/table-stig-$(PROD)-testinfo.html \
+#		$(TRANS)/xccdf2table-profileccirefs.xslt \
+#		$(OUT)/unlinked-$(PROD)-xccdf.xml
+#	xsltproc -stringparam overlay "../$(IN)/auxiliary/stig_overlay.xml" -o $(OUT)/unlinked-stig-$(PROD)-xccdf.xml \
+#		$(TRANS)/xccdf-apply-overlay-stig.xslt \
+#		$(OUT)/unlinked-$(PROD)-xccdf.xml
+#	xsltproc -o $(OUT)/table-$(PROD)-stig.html $(TRANS)/xccdf2table-stig.xslt $(OUT)/unlinked-stig-$(PROD)-xccdf.xml  
 
 tables: table-refs table-idents table-srgmap table-stigs
 
